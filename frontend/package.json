@@ -11,6 +11,8 @@
     "build": "node build/build.js"
   },
   "dependencies": {
+    "element-ui": "^2.15.14",
+    "vis": "^4.21.0-EOL",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1"
   },
