@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
+    'trace_app',
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
@@ -50,7 +52,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
+
+ASGI_APPLICATION = 'final_work.asgi.application'
 
 ROOT_URLCONF = 'backend.urls'
 
@@ -81,7 +86,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'rcltool',
         'USER': 'root',
-        'PASSWORD': 'password',
+        'PASSWORD': 'f20010903',
         'HOST': 'localhost',
         'PORT': '3306',
     }
@@ -123,9 +128,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'frontend/dist/static'),
-]
+# STATICFILES_DIRS = [
+#     os.path.join(BASE_DIR, 'dist/static'),
+# ]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

@@ -1,11 +1,17 @@
 <template>
   <div class="main">
-    <LeftMenu class="LeftMenu"></LeftMenu>
+    <div class="left" @click="changeTraceId">
+      <LeftMenu class="LeftMenu"></LeftMenu>
+    </div>
 
-    <!-- <div class="right-box">
-
-        </div> -->
-    <Topology class="topology"></Topology>
+    <div class="right">
+      <div class="right-top">
+        <Topology class="topology"></Topology>
+      </div>
+      <div class="right-bottom">
+        <trace-graph :id="selectedTraceId" />
+      </div>
+    </div>
 
   </div>
 </template>
@@ -13,14 +19,26 @@
 <script>
 import LeftMenu from '@/components/LeftMenu.vue'
 import Topology from '@/components/Topology.vue'
+import TraceGraph from '@/components/TraceGraph/index.vue'
 
 export default {
   components: {
     LeftMenu,
-    Topology
+    Topology,
+    TraceGraph
   },
-
-  methods: {},
+  data () {
+    return {
+      traceList: [],
+      selectedTraceId: '123'
+    }
+  },
+  methods: {
+    changeTraceId () {
+      this.selectedTraceId = Math.random().toString(36).substring(7)
+      console.log(this.selectedTraceId)
+    }
+  },
   mounted () {}
 }
 </script>
@@ -29,17 +47,17 @@ export default {
 .main {
   display: flex;
 }
-.right-box {
-  /* position: absolute; */
-  /* left: 290px; */
-  display: flex;
+.left {
+  width: 20%;
+  height: 100vh;
+}
+.right {
   width: 80%;
-  height: 45vh;
+  height: 100vh;
   justify-content: space-between;
 }
 .LeftMenu {
-  width: 20%;
-  height: 100vh;
+  height: 100%;
 }
 .topology {
   border: 1px rgb(147, 145, 145) solid;
