@@ -5,19 +5,19 @@
         <div class="title">{{spanList[0].operationName}}</div>
         <div class="trace-id">{{id}}</div>
         <div class="detail">
-          <label-black value="起始点"></label-black>
+          <label-black value="Start Time"></label-black>
           <div style="margin-right: 10px;">{{spanList[0].startTime}}</div>
-          <label-black value="持续时间"></label-black>
+          <label-black value="Duratiob"></label-black>
           <div>{{spanList[0].duration}} ms</div>
         </div>
       </div>
       <div class="tab-list">
         <el-button :type="tabIndex === 0? 'primary': 'info'"
                     @click="() => {this.tabIndex = 0}"
-                    icon="el-icon-s-order">列表</el-button>
+                    icon="el-icon-s-order">List</el-button>
         <el-button :type="tabIndex === 1? 'primary': 'info'"
                     @click="() => {this.tabIndex = 1}"
-                    icon="el-icon-s-grid">表格</el-button>
+                    icon="el-icon-s-grid">Grid</el-button>
       </div>
     </div>
     <trace-graph-list v-if="tabIndex === 0"
