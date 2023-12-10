@@ -8,7 +8,7 @@
                     :color="getPodColor(index)"></label-pod>
       </div>
       <el-button type="primary"
-                  @click="handleImageExport()">导出为图片</el-button>
+                  @click="handleImageExport()">Export as Image</el-button>
     </div>
     <div class="main"
           ref="main">

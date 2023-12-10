@@ -9,7 +9,7 @@
         <div @click="chosedEmun3=!chosedEmun3"
              class="menu-item-tag">
           <div><i class="el-icon-s-finance"></i>
-            <span>异常Traces列表 1</span>
+            <span>List 1 of faulty Traces</span>
           </div>
           <img class="menu-chosed-icon"
                :src="chosedEmun3?upImage:downImage"
@@ -32,7 +32,7 @@
         <div @click="chosedEmun2=!chosedEmun2"
              class="menu-item-tag">
           <div><i class="el-icon-discover"></i>
-            <span>异常Traces列表 2</span>
+            <span>List 2 of faulty Traces</span>
           </div>
           <img class="menu-chosed-icon"
                :src="chosedEmun2?upImage:downImage"
@@ -101,7 +101,9 @@ export default {
   background-color: rgba(0, 33, 64, 1);
   margin-bottom: 2em;
 }
-
+.menu-box{
+    margin-top: 70px;
+}
 .menu-item {
   padding-top: 7px;
   padding-bottom: 7px;
