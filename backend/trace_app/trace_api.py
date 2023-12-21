@@ -6,8 +6,13 @@ import time
 import json
 import sys
 import pathlib
+import os
+import csv
+import pymysql
+
 trace_app_path = pathlib.Path(__file__).parent
 sys.path.append(trace_app_path)
+
 
 def get_span_list(trace_id):
     span_list = []
