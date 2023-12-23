@@ -6,12 +6,9 @@ from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from .models import Span, RCLLabel
-import pandas as pd
-from datetime import datetime
-import json
-import time
 from trace_app.trace_api import get_span_list
 import csv
+import json
 
 
 # 忽略 CSRF 保护
@@ -47,4 +44,29 @@ def get_data(request):
             return JsonResponse({'isSuccess': 'false', 'info': '文件路径不存在，导入失败!'}, safe=False, status=400)
     except Exception as e:
         print(e)
-        return JsonResponse({"isSuccess": "error", 'info': '请检查程序!'}, status=500)
+        return JsonResponse({'isSuccess': 'error', 'info': '请检查程序!'}, status=500)
+
+
+@require_http_methods(['POST'])
+def get_root_cause(request):
+    try:
+        data = json.loads(request.body)
+        trace_id = data.get("trace_id", "")
+        operation_name = data.get("operation_name", "")
+        cmdb_id = data.get("cmdb_id", "")
+        if RCLLabel.objects.filter(trace_id=trace_id).exists():
+            return JsonResponse({'isSuccess': 'false', 'info': '此调用链已标注!'}, safe=False, status=400)
+        else:
+            rcl_info = RCLLabel(
+                trace_id=trace_id,
+                operation_name=operation_name,
+                cmdb_id=cmdb_id
+            )
+            rcl_info.save()
+            if RCLLabel.objects.filter(trace_id=trace_id).exists():
+                return JsonResponse({'isSuccess': 'ok', 'info': '调用链标注成功!'}, safe=False, status=200)
+            else:
+                return JsonResponse({'isSuccess': 'false', 'info': '标注失败!'}, safe=False, status=401)
+    except Exception as e:
+        print(e)
+        return JsonResponse({'isSuccess': 'error', 'info': '请检查程序!'}, status=500)
