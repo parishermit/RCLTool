@@ -86,7 +86,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'rcltool',
         'USER': 'root',
-        'PASSWORD': 'f20010903',
+        'PASSWORD': 'wangjiaju',
         'HOST': 'localhost',
         'PORT': '3306',
     }

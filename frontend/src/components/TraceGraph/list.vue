@@ -103,16 +103,18 @@ export default {
     getData () {
       this.podList = []
       this.endTime = 0
-      var startTime = this.spanList[0].timestamp
+      var startTime = Number(this.spanList[0].timestamp)
       this.spanList.forEach((item) => {
+        var itemTimestamp = Number(item.timestamp)
+        var itemDuration = Number(item.duration)
         if (this.podList.indexOf(item.cmdbId) === -1) {
           this.podList.push(item.cmdbId)
         }
-        if (item.timestamp < startTime) {
-          startTime = item.timestamp
+        if (itemTimestamp < startTime) {
+          startTime = itemTimestamp
         }
-        if (item.duration + item.timestamp > this.endTime) {
-          this.endTime = item.duration + item.timestamp
+        if (itemDuration + itemTimestamp > this.endTime) {
+          this.endTime = itemDuration + itemTimestamp
         }
         var deep = 1
         var tempSpan = item
@@ -125,7 +127,6 @@ export default {
         item.deep = deep
       })
       this.totalDuration = this.endTime - startTime
-      console.log('list.vue', this.spanList)
     },
     getPodColor (index) {
       var length = this.podList.length

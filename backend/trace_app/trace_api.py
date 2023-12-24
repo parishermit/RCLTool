@@ -9,13 +9,14 @@ import pathlib
 import os
 import csv
 import pymysql
+from trace_app.models import Span
+
 
 trace_app_path = pathlib.Path(__file__).parent
 sys.path.append(trace_app_path)
 
 
 def get_span_list(trace_id):
-    span_list = []
-    with open(trace_app_path.joinpath('span_list.json'), 'r') as json_file:
-        span_list = json.load(json_file)
-    return span_list
+    span_list = Span.objects.filter(trace_id=trace_id).values()
+    print(list(span_list))
+    return list(span_list)

@@ -33,6 +33,7 @@ export default {
   },
   methods: {
     getScale () {
+      console.log(this.length)
       this.scaleList.forEach((item) => {
         if (this.length / item > 5) {
           this.scale = item
