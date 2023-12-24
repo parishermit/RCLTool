@@ -30,12 +30,12 @@ export default {
   data () {
     return {
       traceList: [],
-      selectedTraceId: '123'
+      selectedTraceId: '1234'
     }
   },
   methods: {
     changeTraceId () {
-      this.selectedTraceId = Math.random().toString(36).substring(7)
+      this.selectedTraceId = '1234'
       console.log(this.selectedTraceId)
     }
   },

@@ -52,29 +52,42 @@ export default {
   },
   created () {
     console.log('mounted')
-    this.getSpanList()
+    this.getSpanList().then(() => {
+      console.log(this.spanList) // 输出 testList 值
+    }).catch((error) => {
+      console.error('Error while fetching data:', error)
+    })
   },
   methods: {
     getSpanList () {
-      getTrace({ trace_id: this.id }).then((res) => {
-        this.spanList = res.data
-        this.spanList.forEach((span) => {
-          Object.entries(span).forEach(([key, value]) => {
-            delete span[key]
-            span[toHump(key)] = value
+      return new Promise((resolve, reject) => {
+        getTrace({ trace_id: this.id }).then((res) => {
+          this.spanList = res.data
+          this.spanList.forEach((span) => {
+            Object.entries(span).forEach(([key, value]) => {
+              delete span[key]
+              span[toHump(key)] = value
+            })
+            span.startTime = new Date(
+              Math.round(span.timestamp / 1000)
+            ).toLocaleString()
           })
-          span.startTime = new Date(
-            Math.round(span.timestamp / 1000)
-          ).toLocaleString()
+          resolve() // 解决 Promise
+          // 进行其他操作，如果需要的话
+        }).catch((error) => {
+          reject(error) // 拒绝 Promise
         })
       })
-      console.log(this.spanList)
     }
   },
   watch: {
     id () {
       console.log('id changed')
-      this.getSpanList()
+      this.getSpanList().then(() => {
+        console.log('span', this.spanList)
+      }).catch((error) => {
+        console.error('Error while fetching data:', error)
+      })
     }
   }
 }

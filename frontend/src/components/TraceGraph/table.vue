@@ -1,6 +1,6 @@
 <template>
   <div class="trace-graph-table">
-    <el-table :data="spanList"
+    <el-table :data="spanTreeList"
               row-key="spanId"
               border
               default-expand-all
@@ -51,13 +51,13 @@ export default {
   },
   methods: {
     getData () {
-      this.spanTreeList = JSON.parse(JSON.stringify(this.spanList))
+      this.spanTreeList = this.spanList
       this.spanTreeList.forEach((item) => {
         if (item.parentSpan !== '' && item.parentSpan !== null && item.parentSpan !== undefined) {
           var parentIndex = this.spanTreeList.findIndex(
             (parent) => parent.spanId === item.parentSpan
           )
-          if (this.spanTreeList[parentIndex].children === undefined) {
+          if (this.spanTreeList[parentIndex].children === undefined || this.spanTreeList[parentIndex].children === null || this.spanTreeList[parentIndex].children === '') {
             this.spanTreeList[parentIndex].children = [item]
           } else {
             this.spanTreeList[parentIndex].children.push(item)
