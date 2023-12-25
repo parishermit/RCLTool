@@ -4,9 +4,9 @@ import os.path
 from django.views import View
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from .models import Span, RCLLabel
-from trace_app.trace_api import get_span_list,get_trace_list
+from trace_app.trace_api import get_span_list, get_trace_list
 import csv
 import json
 
@@ -21,11 +21,12 @@ class TraceView(View):
             trace_id = request.GET.get('trace_id')
             span_id = request.GET.get('span_id')
             data = []
-            print(trace_id,span_id)
+            print(trace_id, span_id)
             return JsonResponse(data, safe=False, status=200)
         else:
-            return JsonResponse({'error': 'Invalid API request method.'}, status=400)     
-    def get_span_list(request):
+            return JsonResponse({'error': 'Invalid API request method.'}, status=400)
+
+    def get_span_list(self, request):
         if request.method == 'GET':
             trace_id = request.GET.get('trace_id')
             # 凭借trace_id去数据库查询数据并返回list
@@ -33,76 +34,107 @@ class TraceView(View):
             return JsonResponse(data, safe=False, status=200)
         else:
             return JsonResponse({'error': 'Invalid API request method.'}, status=400)
-    def get_trace_list(request):
+
+    def get_trace_list(self, request):
         if request.method == 'GET':
             data = get_trace_list()
             return JsonResponse(data, safe=False, status=200)
         else:
             return JsonResponse({'error': 'Invalid API request method.'}, status=400)
-    def get_nodes_and_edges(request):
+
+    def get_nodes_and_edges(self, request):
         if request.method == 'GET':
             trace_id = request.GET.get('trace_id')
             # 凭借trace_id去数据库查询数据并返回list
             data = get_span_list(trace_id)
-            nodes=[]
-            edges=[]
+            nodes = []
+            edges = []
             for span in data:
-                node={"shape": 'circle'}
-                edge={}
-                node['id']=span['span_id']
-                node['duration']=span['duration']
-                node['label']=span['operation_name'].split('/')[-1]
-                edge['from']=span['parent_span']
-                edge['to']=span['span_id']
+                node = {"shape": 'circle'}
+                edge = {}
+                node['id'] = span['span_id']
+                node['duration'] = span['duration']
+                node['label'] = span['operation_name'].split('/')[-1]
+                edge['from'] = span['parent_span']
+                edge['to'] = span['span_id']
                 nodes.append(node)
                 edges.append(edge)
-                
-            return JsonResponse([nodes,edges], safe=False, status=200)
+
+            return JsonResponse([nodes, edges], safe=False, status=200)
         else:
             return JsonResponse({'error': 'Invalid API request method.'}, status=400)
 
 
-@require_http_methods(['POST'])
-def get_data(request):
-    try:
-        span_name_list = Span.objects.values_list()
-        filepath = request.POST.get('filepath')
-        if os.path.exists(filepath):
-            with open(filepath, 'r', encoding='utf-8') as f:
-                reader = csv.reader(f)
-                csv_data = []
-                for row in reader:
-                    if tuple(row[0]) in span_name_list:
-                        csv_data.append(row)
-                Span.objects.bulk_create(csv_data)
+@csrf_exempt
+class DataProcess(View):
+    @require_http_methods(['POST'])
+    def get_data(self, request):
+        try:
+            csv_file = request.FILES["trace.csv"]
+            file_data = csv_file.read().decode("utf-8")
+            lines = file_data.split("\n")
+            for line in lines:
+                fields = line.split(",")
+                data_dict = {"timestamp": fields[0], "cmdb_id": fields[1], "span_id": fields[2],
+                             "trace_id": fields[3], "duration": fields[4], "type": fields[5],
+                             "status_code": fields[6], "operation_name": fields[7], "parent_span": fields[8], "label": 0}
+                Span(data_dict).save()
                 return JsonResponse({'isSuccess': 'ok', 'info': '文件数据导入成功！'}, safe=False, status=200)
-        else:
-            return JsonResponse({'isSuccess': 'false', 'info': '文件路径不存在，导入失败!'}, safe=False, status=400)
-    except Exception as e:
-        print(e)
-        return JsonResponse({'isSuccess': 'error', 'info': '请检查程序!'}, status=500)
+        except Exception as e:
+            print(e)
+            return JsonResponse({'isSuccess': 'error', 'info': '文件数据导入失败!'}, status=500)
+
+    @require_http_methods(['GET'])
+    def output_trace_csv(self, request):
+        try:
+            response = HttpResponse(content_type='text/csv')
+            response['Content-Disposition'] = 'attachment; filename="trace.csv"'
+            writer = csv.writer(response)
+            writer.writerow(['timestamp', 'cmdb_id', 'span_id', 'trace_id', 'duration', 'type',
+                             'status_code', 'operation_name', 'parent_span', 'label'])
+            data = Span.objects.all().values_list('timestamp', 'cmdb_id', 'span_id', 'trace_id', 'duration', 'type',
+                                                  'status_code', 'operation_name', 'parent_span', 'label')
+            for row in data:
+                writer.writerow(row)
+            return response
+        except Exception as e:
+            print(e)
+            return JsonResponse({'isSuccess': 'error', 'info': '请检查程序!'}, status=500)
+
+    @require_http_methods(['GET'])
+    def output_rcl_csv(self, request):
+        try:
+            response = HttpResponse(content_type='text/csv')
+            response['Content-Disposition'] = 'attachment; filename="groundtruth.csv"'
+            writer = csv.writer(response)
+            writer.writerow(['trace_id', 'operation_name', 'cmdb_id'])
+            data = Span.objects.all().values_list('trace_id', 'operation_name', 'cmdb_id')
+            for row in data:
+                writer.writerow(row)
+            return response
+        except Exception as e:
+            print(e)
+            return JsonResponse({'isSuccess': 'error', 'info': '请检查程序!'}, status=500)
 
 
-@require_http_methods(['POST'])
-def get_root_cause(request):
-    try:
-        data = json.loads(request.body)
-        trace_id = data.get("trace_id", "")
-        operation_name = data.get("operation_name", "")
-        cmdb_id = data.get("cmdb_id", "")
-        if RCLLabel.objects.filter(trace_id=trace_id).exists():
-            return JsonResponse({'isSuccess': 'false', 'info': '此调用链已标注!'}, safe=False, status=400)
-        else:
-            rcl_info = RCLLabel(
-                trace_id=trace_id,
-                operation_name=operation_name,
-                cmdb_id=cmdb_id
-            )
-            rcl_info.save()
+@csrf_exempt
+class ModifyDB(View):
+    @require_http_methods(['POST'])
+    def get_root_cause(self, request):
+        try:
+            data = json.loads(request.body)
+            trace_id = data.get("trace_id", "")
+            span_id = data.get("span_id", "")
+            Span.objects.filter(span_id=span_id)
             if RCLLabel.objects.filter(trace_id=trace_id).exists():
-                return JsonResponse({'isSuccess': 'ok', 'info': '调用链标注成功!'}, safe=False, status=200)
+                return JsonResponse({'isSuccess': 'false', 'info': '此调用链已标注!'}, safe=False, status=400)
             else:
-                return JsonResponse({'isSuccess': 'false', 'info': '标注失败!'}, safe=False, status=401)
-    except Exception as e:
-        print(e)
-        return JsonResponse({'isSuccess': 'error', 'info': '请检查程序!'}, status=500)
+
+                rcl_info.save()
+                if RCLLabel.objects.filter(trace_id=trace_id).exists():
+                    return JsonResponse({'isSuccess': 'ok', 'info': '调用链标注成功!'}, safe=False, status=200)
+                else:
+                    return JsonResponse({'isSuccess': 'false', 'info': '标注失败!'}, safe=False, status=401)
+        except Exception as e:
+            print(e)
+            return JsonResponse({'isSuccess': 'error', 'info': '请检查程序!'}, status=500)

@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class Span(models.Model):
     timestamp = models.CharField(max_length=100, default="")
     cmdb_id = models.CharField(max_length=100, default="")
@@ -10,6 +11,7 @@ class Span(models.Model):
     status_code = models.CharField(max_length=100, default="0")
     operation_name = models.CharField(max_length=200, default="")
     parent_span = models.CharField(max_length=100, default="")
+    label = models.IntegerField(default=0)
 
 
 class RCLLabel(models.Model):

@@ -6,7 +6,7 @@ The `urlpatterns` list routes URLs to views. For more information please see:
 Examples:
 Function views
     1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
+    2. Add a URL to urlpatterns:  path('', views.Home, name='home')
 Class-based views
     1. Add an import:  from other_app.views import Home
     2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
@@ -17,7 +17,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, re_path
 from django.views.generic.base import TemplateView
-from trace_app.views import TraceView, get_data
+from trace_app.views import TraceView, DataProcess
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -25,6 +26,8 @@ urlpatterns = [
     path('gettracelist', TraceView.get_trace_list, name='gettracelist'),
     path('getNodesAndEdges', TraceView.get_nodes_and_edges, name='getNodesAndEdges'),
     path('abnormalLabel', TraceView.abnormal_label, name='abnormalLabel'),
-    path('getdata/', get_data, name='getdata'),
+    path('getdata', DataProcess.get_data, name='getdata'),
+    path('outputtracecsv', DataProcess.output_trace_csv, name='outputtracecsv'),
+    path('outputrclcsv', DataProcess.output_rcl_csv, name='outputrclcsv'),
     re_path(r'^$', TemplateView.as_view(template_name='index.html'))
 ]
