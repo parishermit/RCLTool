@@ -15,7 +15,7 @@
             class="dialog-footer">
         <el-button @click="dialogVisible = false">Cancel</el-button>
         <el-button type="primary"
-                   @click="dialogVisible = false">Confirm</el-button>
+                   @click="abnormalLabel">Confirm</el-button>
       </span>
     </el-dialog>
   </div>
@@ -23,7 +23,7 @@
 
 <script>
 import { Network } from 'vis'
-import { getNodesAndEdges } from '@/api/trace.js'
+import { getNodesAndEdges, abnormalLabelRequest } from '@/api/trace.js'
 export default {
   props: {
     id: String
@@ -122,6 +122,12 @@ export default {
         }).catch((error) => {
           reject(error) // 拒绝 Promise
         })
+      })
+    },
+    abnormalLabel () {
+      abnormalLabelRequest({trace_id: this.id, span_id: this.selectedNodeId}).then((res) => {
+        alert(1)
+        this.dialogVisible = false
       })
     }
   },

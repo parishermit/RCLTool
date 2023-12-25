@@ -16,6 +16,15 @@ import json
 # 限制 HTTP 方法为 GET
 @require_http_methods(['GET'])
 class TraceView(View):
+    def abnormal_label(request):
+        if request.method == 'GET':
+            trace_id = request.GET.get('trace_id')
+            span_id = request.GET.get('span_id')
+            data = []
+            print(trace_id,span_id)
+            return JsonResponse(data, safe=False, status=200)
+        else:
+            return JsonResponse({'error': 'Invalid API request method.'}, status=400)     
     def get_span_list(request):
         if request.method == 'GET':
             trace_id = request.GET.get('trace_id')

@@ -1,7 +1,7 @@
 <template>
   <div class="main">
-    <div class="left" @click="changeTraceId">
-      <LeftMenu class="LeftMenu"></LeftMenu>
+    <div class="left" >
+      <LeftMenu class="LeftMenu" :trace_list="traceList" @transfer="getSelectedTraceId"></LeftMenu>
     </div>
 
     <div class="right">
@@ -20,7 +20,7 @@
 import LeftMenu from '@/components/LeftMenu.vue'
 import Topology from '@/components/Topology.vue'
 import TraceGraph from '@/components/TraceGraph/index.vue'
-
+import { gettracelist } from '@/api/trace.js'
 export default {
   components: {
     LeftMenu,
@@ -30,16 +30,26 @@ export default {
   data () {
     return {
       traceList: [],
-      selectedTraceId: '1234'
+      selectedTraceId: ''
     }
   },
   methods: {
     changeTraceId () {
       this.selectedTraceId = '1234'
       console.log(this.selectedTraceId)
+    },
+    getTracelist () {
+      gettracelist().then((res) => {
+        this.traceList = res.data
+      })
+    },
+    getSelectedTraceId (msg) {
+      this.selectedTraceId = msg
     }
   },
-  mounted () {}
+  mounted () {
+    this.getTracelist()
+  }
 }
 </script>
 

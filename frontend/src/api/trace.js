@@ -23,3 +23,11 @@ export function gettracelist (params) {
     params
   })
 }
+
+export function abnormalLabelRequest (params) {
+  return request({
+    url: '/abnormalLabel',
+    method: 'get',
+    params
+  })
+}
