@@ -9,7 +9,7 @@
         <div @click="chosedEmun3=!chosedEmun3"
              class="menu-item-tag">
           <div><i class="el-icon-s-finance"></i>
-            <span>List 1 of faulty Traces</span>
+            <span>List of faulty Traces</span>
           </div>
           <img class="menu-chosed-icon"
                :src="chosedEmun3?upImage:downImage"
@@ -17,14 +17,8 @@
         </div>
         <div class="sub-enmu-box"
              v-if="chosedEmun3">
-          <div :class="activeEmun==5?'sub-enmu-item active-item':'sub-enmu-item'"
-               @click="activeEmun=5">Trace 1</div>
-          <div :class="activeEmun==6?'sub-enmu-item active-item':'sub-enmu-item'"
-               @click="activeEmun=6">Trace 2</div>
-          <div :class="activeEmun==7?'sub-enmu-item active-item':'sub-enmu-item'"
-               @click="activeEmun=7">Trace 3</div>
-          <div :class="activeEmun==8?'sub-enmu-item active-item':'sub-enmu-item'"
-               @click="activeEmun=8">Trace 4</div>
+             <div v-for="(item, index) in trace_list" :key="index" :class="activeEmun==index?'sub-enmu-item active-item':'sub-enmu-item'" @click="choseSelectedTraceId(item,index)">Trace {{item}}</div>
+
         </div>
       </div>
 
@@ -32,7 +26,7 @@
         <div @click="chosedEmun2=!chosedEmun2"
              class="menu-item-tag">
           <div><i class="el-icon-discover"></i>
-            <span>List 2 of faulty Traces</span>
+            <span>List of faulty Traces</span>
           </div>
           <img class="menu-chosed-icon"
                :src="chosedEmun2?upImage:downImage"
@@ -59,18 +53,20 @@
 
 import upward from '../assets/upward.svg'
 import downward from '../assets/downward.svg'
-import { gettracelist } from '@/api/trace.js'
+
 export default {
+  props: {
+    trace_list: []
+  },
   name: 'Manage',
   data () {
     return {
       upImage: upward,
       downImage: downward,
-      activeEmun: 0,
+      activeEmun: -1,
       chosedEmun2: false,
-      chosedEmun3: false,
-      chosedEmun4: false,
-      trace_list: []
+      chosedEmun3: false
+
     }
   },
   components: {},
@@ -81,14 +77,14 @@ export default {
     handleClose (key, keyPath) {
       console.log(key, keyPath)
     },
-    getTracelist () {
-      gettracelist().then((res) => {
-        this.trace_list = res.data
-      })
+    choseSelectedTraceId (Traceid, index) {
+      this.activeEmun = index
+      this.$emit('transfer', Traceid)// 触发transfer方法 为向父组件传递的数据
     }
+
   },
   mounted () {
-    this.getTracelist()
+
   }
 }
 </script>

@@ -24,6 +24,7 @@ urlpatterns = [
     path('getspanlist', TraceView.get_span_list, name='getspanlist'),
     path('gettracelist', TraceView.get_trace_list, name='gettracelist'),
     path('getNodesAndEdges', TraceView.get_nodes_and_edges, name='getNodesAndEdges'),
+    path('abnormalLabel', TraceView.abnormal_label, name='abnormalLabel'),
     path('getdata/', get_data, name='getdata'),
     re_path(r'^$', TemplateView.as_view(template_name='index.html'))
 ]
