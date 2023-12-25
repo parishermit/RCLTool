@@ -22,6 +22,8 @@ from trace_app.views import TraceView, get_data
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('getspanlist', TraceView.get_span_list, name='getspanlist'),
+    path('gettracelist', TraceView.get_trace_list, name='gettracelist'),
+    path('getNodesAndEdges', TraceView.get_nodes_and_edges, name='getNodesAndEdges'),
     path('getdata/', get_data, name='getdata'),
     re_path(r'^$', TemplateView.as_view(template_name='index.html'))
 ]

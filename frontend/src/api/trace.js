@@ -7,3 +7,19 @@ export function getTrace (params) {
     params
   })
 }
+
+export function getNodesAndEdges (params) {
+  return request({
+    url: '/getNodesAndEdges',
+    method: 'get',
+    params
+  })
+}
+
+export function gettracelist (params) {
+  return request({
+    url: '/gettracelist',
+    method: 'get',
+    params
+  })
+}

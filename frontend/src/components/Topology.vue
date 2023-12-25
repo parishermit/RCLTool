@@ -23,23 +23,28 @@
 
 <script>
 import { Network } from 'vis'
-
+import { getNodesAndEdges } from '@/api/trace.js'
 export default {
+  props: {
+    id: String
+  },
   data () {
     return {
-      nodes: [
-        { id: 'asd', label: 'Service 1', size: 660, shape: 'circle' },
-        { id: 'zxc', label: 'Service 2', size: 60, shape: 'circle' },
-        { id: 'qwe', label: 'Service 3', size: 60, shape: 'circle' },
-        { id: '123', label: 'Service 4', size: 60, shape: 'circle' },
-        { id: '456', label: 'Service 5', size: 60, shape: 'circle', color: 'red' }
-      ],
-      edges: [
-        { from: 'asd', to: 'zxc' },
-        { from: 'zxc', to: 'qwe' },
-        { from: 'zxc', to: '456' },
-        { from: '456', to: '123' }
-      ],
+      nodes: [],
+      edges: [],
+      //   nodes: [
+      //     { id: 'asd', label: 'Service 1', shape: 'circle' },
+      //     { id: 'zxc', label: 'Service 2', shape: 'circle' },
+      //     { id: 'qwe', label: 'Service 3', shape: 'circle' },
+      //     { id: '123', label: 'Service 4', shape: 'circle' },
+      //     { id: '456', label: 'Service 5', shape: 'circle', color: 'red' }
+      //   ],
+      //   edges: [
+      //     { from: 'asd', to: 'zxc' },
+      //     { from: 'zxc', to: 'qwe' },
+      //     { from: 'zxc', to: '456' },
+      //     { from: '456', to: '123' }
+      //   ],
       selectedNodeId: '',
       dialogVisible: false
     }
@@ -106,10 +111,36 @@ export default {
     showSelectionDialog (nodeId) {
       this.selectedNodeId = nodeId
       this.dialogVisible = true
+    },
+    getSpanList () {
+      return new Promise((resolve, reject) => {
+        getNodesAndEdges({ trace_id: this.id }).then((res) => {
+          this.nodes = res.data[0]
+          this.edges = res.data[1]
+          resolve() // 解决 Promise
+          // 进行其他操作，如果需要的话
+        }).catch((error) => {
+          reject(error) // 拒绝 Promise
+        })
+      })
     }
   },
   mounted () {
-    this.createTopology()
+    this.getSpanList().then(() => {
+      this.createTopology()// testList 值
+    }).catch((error) => {
+      console.error('Error while fetching data:', error)
+    })
+  },
+  watch: {
+    id () {
+      console.log('id changed')
+      this.getSpanList().then(() => {
+        this.createTopology()
+      }).catch((error) => {
+        console.error('Error while fetching data:', error)
+      })
+    }
   }
 }
 </script>

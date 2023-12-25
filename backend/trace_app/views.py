@@ -6,7 +6,7 @@ from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from .models import Span, RCLLabel
-from trace_app.trace_api import get_span_list
+from trace_app.trace_api import get_span_list,get_trace_list
 import csv
 import json
 
@@ -22,6 +22,33 @@ class TraceView(View):
             # 凭借trace_id去数据库查询数据并返回list
             data = get_span_list(trace_id)
             return JsonResponse(data, safe=False, status=200)
+        else:
+            return JsonResponse({'error': 'Invalid API request method.'}, status=400)
+    def get_trace_list(request):
+        if request.method == 'GET':
+            data = get_trace_list()
+            return JsonResponse(data, safe=False, status=200)
+        else:
+            return JsonResponse({'error': 'Invalid API request method.'}, status=400)
+    def get_nodes_and_edges(request):
+        if request.method == 'GET':
+            trace_id = request.GET.get('trace_id')
+            # 凭借trace_id去数据库查询数据并返回list
+            data = get_span_list(trace_id)
+            nodes=[]
+            edges=[]
+            for span in data:
+                node={"shape": 'circle'}
+                edge={}
+                node['id']=span['span_id']
+                node['duration']=span['duration']
+                node['label']=span['operation_name'].split('/')[-1]
+                edge['from']=span['parent_span']
+                edge['to']=span['span_id']
+                nodes.append(node)
+                edges.append(edge)
+                
+            return JsonResponse([nodes,edges], safe=False, status=200)
         else:
             return JsonResponse({'error': 'Invalid API request method.'}, status=400)
 

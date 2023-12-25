@@ -59,7 +59,7 @@
 
 import upward from '../assets/upward.svg'
 import downward from '../assets/downward.svg'
-
+import { gettracelist } from '@/api/trace.js'
 export default {
   name: 'Manage',
   data () {
@@ -69,7 +69,8 @@ export default {
       activeEmun: 0,
       chosedEmun2: false,
       chosedEmun3: false,
-      chosedEmun4: false
+      chosedEmun4: false,
+      trace_list: []
     }
   },
   components: {},
@@ -79,7 +80,15 @@ export default {
     },
     handleClose (key, keyPath) {
       console.log(key, keyPath)
+    },
+    getTracelist () {
+      gettracelist().then((res) => {
+        this.trace_list = res.data
+      })
     }
+  },
+  mounted () {
+    this.getTracelist()
   }
 }
 </script>
