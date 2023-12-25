@@ -6,7 +6,7 @@
 
     <div class="right">
       <div class="right-top">
-        <Topology class="topology"></Topology>
+        <Topology class="topology" :id="selectedTraceId"></Topology>
       </div>
       <div class="right-bottom">
         <trace-graph :id="selectedTraceId" />
