@@ -5,7 +5,7 @@ from django.views import View
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse, HttpResponse
-from .models import Span
+from .models import Span, RCLLabel
 from trace_app.trace_api import get_span_list, get_trace_list
 import csv
 import json
@@ -64,7 +64,7 @@ class TraceView(View):
 @csrf_exempt
 class DataProcess(View):
     @require_http_methods(['POST'])
-    def get_data(self, request):
+    def get_data(request):
         try:
             csv_file = request.FILES["trace.csv"]
             file_data = csv_file.read().decode("utf-8")
@@ -82,7 +82,7 @@ class DataProcess(View):
             return JsonResponse({'isSuccess': 'error', 'info': '文件数据导入失败!'}, status=500)
 
     @require_http_methods(['GET'])
-    def output_trace_csv(self, request):
+    def output_trace_csv(request):
         try:
             response = HttpResponse(content_type='text/csv')
             response['Content-Disposition'] = 'attachment; filename="trace.csv"'
@@ -99,13 +99,13 @@ class DataProcess(View):
             return JsonResponse({'isSuccess': 'error', 'info': '请检查程序!'}, status=500)
 
     @require_http_methods(['GET'])
-    def output_rcl_csv(self, request):
+    def output_rcl_csv(request):
         try:
             response = HttpResponse(content_type='text/csv')
             response['Content-Disposition'] = 'attachment; filename="groundtruth.csv"'
             writer = csv.writer(response)
             writer.writerow(['trace_id', 'operation_name', 'cmdb_id'])
-            data = Span.objects.all().values_list('trace_id', 'operation_name', 'cmdb_id')
+            data = RCLLabel.objects.all().values_list('trace_id', 'operation_name', 'cmdb_id')
             for row in data:
                 writer.writerow(row)
             return response
