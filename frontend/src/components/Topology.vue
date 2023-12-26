@@ -30,6 +30,9 @@
                    @click="abnormalLabel">Confirm</el-button>
       </span>
     </el-dialog>
+
+    <div id="customTooltip"
+         class="custom-tooltip"></div>
   </div>
 </template>
 
@@ -115,9 +118,41 @@ export default {
           if (nodes.length > 0) {
             const nodeId = nodes[0]
             this.showSelectionDialog(nodeId)
-            // console.log(`Node ${nodeId} clicked`);
-            // 在这里可以执行点击节点后的操作
           }
+        })
+        // 添加事件监听器
+        network.on('click', function (params) {
+          // 鼠标悬停在节点上时的事件处理
+          const { nodes } = params
+          if (nodes.length > 0) {
+            var nodeId = nodes[0]
+            var nodeDetails
+            for (let i = 0; i < data.nodes.length; i++) {
+              if (data.nodes[i].id === nodeId) {
+                nodeDetails = data.nodes[i]
+                break
+              }
+            }
+
+            // 获取悬浮框元素
+            var customTooltip = document.getElementById('customTooltip')
+
+            // 设置悬浮框内容和位置
+            customTooltip.innerHTML =
+              'Time latency is ' + nodeDetails['duration'] + 'ms'
+            customTooltip.style.left = params.pointer.DOM.x + 10 + 'px'
+            customTooltip.style.top = params.pointer.DOM.y - 10 + 'px'
+
+            // 显示悬浮框
+            customTooltip.style.display = 'block'
+          }
+        })
+
+        network.on('blurNode', function () {
+          // 鼠标移出节点时的事件处理
+          // 隐藏悬浮框
+          var customTooltip = document.getElementById('customTooltip')
+          customTooltip.style.display = 'none'
         })
       }
     },
@@ -164,7 +199,6 @@ export default {
   },
   watch: {
     id () {
-      console.log('id changed')
       this.getSpanList()
         .then(() => {
           this.createTopology()
@@ -199,5 +233,15 @@ export default {
 }
 .dialog-box div {
   margin: 15px;
+}
+/* 悬浮框的样式 */
+.custom-tooltip {
+  position: absolute;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  display: none;
 }
 </style>

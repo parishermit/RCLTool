@@ -72,12 +72,6 @@ export default {
   },
   components: {},
   methods: {
-    handleOpen (key, keyPath) {
-      console.log(key, keyPath)
-    },
-    handleClose (key, keyPath) {
-      console.log(key, keyPath)
-    },
     choseSelectedTraceId (Traceid) {
       this.selectedTraceId = Traceid
       this.$emit('transfer', Traceid) // 触发transfer方法 为向父组件传递的数据
