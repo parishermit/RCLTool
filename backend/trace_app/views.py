@@ -97,8 +97,10 @@ class DataProcess(View):
                              'status_code', 'operation_name', 'parent_span', 'label'])
             data = Span.objects.all().values_list('timestamp', 'cmdb_id', 'span_id', 'trace_id', 'duration', 'type',
                                                   'status_code', 'operation_name', 'parent_span', 'label')
-            for row in data:
-                writer.writerow(row)
+            
+            for item in list(data):
+                print(item)
+                writer.writerow(item)
             return response
         except Exception as e:
             print(e)
@@ -112,8 +114,8 @@ class DataProcess(View):
             writer = csv.writer(response)
             writer.writerow(['trace_id', 'operation_name', 'cmdb_id'])
             data = RCLLabel.objects.all().values_list('trace_id', 'operation_name', 'cmdb_id')
-            for row in data:
-                writer.writerow(row)
+            for item in list(data):
+                writer.writerow(item)
             return response
         except Exception as e:
             print(e)

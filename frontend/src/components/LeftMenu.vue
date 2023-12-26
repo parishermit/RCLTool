@@ -31,7 +31,6 @@
 import upward from '../assets/upward.svg'
 import downward from '../assets/downward.svg'
 import { uploadData, downloadGroundtruth, downloadTrace } from '../api/trace.js'
-import { saveAs } from 'file-saver'
 export default {
   props: {
     traceList: [],
@@ -100,14 +99,26 @@ export default {
     },
     downloadTraceCsv () {
       downloadTrace().then((response) => {
-        saveAs(new Blob([response]), 'trace.csv')
+        const url = window.URL.createObjectURL(new Blob([response.data]))
+        const link = document.createElement('a')
+        link.href = url
+        link.setAttribute('download', 'trace.csv') // 文件名可以根据后端的响应来设置
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
       }).catch(error => {
         console.error('下载失败:', error)
       })
     },
     downloadGroundtruthCsv () {
       downloadGroundtruth().then((response) => {
-        saveAs(new Blob([response]), 'groundtruth.csv')
+        const url = window.URL.createObjectURL(new Blob([response.data]))
+        const link = document.createElement('a')
+        link.href = url
+        link.setAttribute('download', 'groundtruth.csv') // 文件名可以根据后端的响应来设置
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
       }).catch(error => {
         console.error('下载失败:', error)
       })

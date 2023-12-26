@@ -47,6 +47,7 @@ export function downloadTrace (params) {
   return request({
     url: '/outputtracecsv',
     method: 'get',
+    responseType: 'blob',
     params
   })
 }
@@ -55,6 +56,7 @@ export function downloadGroundtruth (params) {
   return request({
     url: '/outputrclcsv',
     method: 'get',
+    responseType: 'blob',
     params
   })
 }
