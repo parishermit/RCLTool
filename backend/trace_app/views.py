@@ -68,15 +68,21 @@ class DataProcess(View):
         try:
             csv_file = request.FILES["trace.csv"]
             file_data = csv_file.read().decode("utf-8")
-            lines = file_data.split("\n")
+            lines = file_data.split("\n")[1:]
+            data_list = []
             for line in lines:
-                fields = line.split(",")
-                data_dict = {"timestamp": fields[0], "cmdb_id": fields[1], "span_id": fields[2],
-                             "trace_id": fields[3], "duration": fields[4], "type": fields[5],
-                             "status_code": fields[6], "operation_name": fields[7], "parent_span": fields[8],
-                             "label": 0}
-                Span(data_dict).save()
-                return JsonResponse({'isSuccess': 'ok', 'info': '文件数据导入成功！'}, safe=False, status=200)
+                try:
+                    fields = line.split(",")
+                    data_dict = {"timestamp": fields[0], "cmdb_id": fields[1], "span_id": fields[2],
+                                "trace_id": fields[3], "duration": fields[4], "type": fields[5],
+                                "status_code": fields[6], "operation_name": fields[7], "parent_span": fields[8],
+                                "label": 0}
+                    data_list.append(Span(**data_dict))
+                except:
+                    print('line', line)
+                    return JsonResponse({'isSuccess': 'error', 'info': '文件数据导入失败!'}, status=500)
+            Span.objects.bulk_create(data_list)
+            return JsonResponse({'isSuccess': 'ok', 'info': '文件数据导入成功！'}, safe=False, status=200)
         except Exception as e:
             print(e)
             return JsonResponse({'isSuccess': 'error', 'info': '文件数据导入失败!'}, status=500)

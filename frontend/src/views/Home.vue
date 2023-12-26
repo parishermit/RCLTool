@@ -89,14 +89,14 @@ export default {
   padding: 0;
 }
 .left {
-  width: 20%;
+  width: 21%;
   height: 100%;
 }
 .LeftMenu {
   height: 100%;
 }
 .right {
-  width: 79%;
+  width: 78%;
   height: 100%;
   display: flex;
   flex-direction: column;

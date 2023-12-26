@@ -47,7 +47,7 @@
               <div class="span-left">
                 <div class="dot"
                       :style="{ 'background-color': getSpanColor(span) }"></div>
-                <img :src="require('../../assets/' + span.type + '.png')"
+                <img :src="require('../../assets/request.png')"
                       class="image" />
                 <div class="error"
                       v-if="span.statusCode !== 200 && span.statusCode !== 0"></div>

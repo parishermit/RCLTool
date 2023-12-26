@@ -8,7 +8,7 @@
               :header-cell-style="{'background-color': '#f3f4f9', 'color': '#2c3e50'}">
       <el-table-column label="Method">
         <template slot-scope="scope">
-          <img :src="require('../../assets/' + scope.row.type + '.png')"
+          <img :src="require('../../assets/request.png')"
                 style="margin: 10px 10px -4px 0px" />
           <span :style="{'color': scope.row.statusCode === 200 || scope.row.statusCode === 0? '#2c3e50': '#e54c17'}">{{scope.row.operationName}}</span>
         </template>

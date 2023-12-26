@@ -32,11 +32,14 @@ export function abnormalLabelRequest (params) {
   })
 }
 
-export function uploadData (params) {
+export function uploadData (formData) {
   return request({
     url: '/getdata',
     method: 'post',
-    params
+    data: formData,
+    headers: {
+      'Content-Type': 'multipart/form-data' // 设置 Content-Type
+    }
   })
 }
 
