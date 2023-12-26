@@ -26,7 +26,7 @@ export function gettracelist (params) {
 
 export function abnormalLabelRequest (params) {
   return request({
-    url: '/abnormalLabel',
+    url: '/getRootCause',
     method: 'get',
     params
   })

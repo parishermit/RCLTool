@@ -3,14 +3,26 @@
     <div ref="network"
          class="topomap"></div>
     <div class="button-box">
-      <el-button type="primary">Annotate Anomaly</el-button>
-      <el-button type="primary">Annotate Root Cause</el-button>
+      <el-button type="primary"
+                 @click="next">Skip</el-button>
     </div>
     <el-dialog title="Tip"
                :visible.sync="dialogVisible"
                width="30%"
                center>
-      <span>Determine whether to mark the Trace as an exception?</span>
+      <div class='dialog-box'>
+        <div>Please select the fault type:</div>
+        <div>
+          <el-radio-group v-model="radio">
+            <el-radio :label="1">Time Anomaly</el-radio>
+            <el-radio :label="2">Structural Anomaly</el-radio>
+            <el-radio :label="3">Network</el-radio>
+          </el-radio-group>
+        </div>
+
+        <div>Determine whether to mark the Trace as an exception?</div>
+      </div>
+
       <span slot="footer"
             class="dialog-footer">
         <el-button @click="dialogVisible = false">Cancel</el-button>
@@ -45,6 +57,7 @@ export default {
       //     { from: 'zxc', to: '456' },
       //     { from: '456', to: '123' }
       //   ],
+      radio: -1,
       selectedNodeId: '',
       dialogVisible: false
     }
@@ -97,7 +110,7 @@ export default {
         const network = new Network(container, data, options)
 
         // 添加点击节点事件监听器
-        network.on('click', (event) => {
+        network.on('doubleClick', (event) => {
           const { nodes } = event
           if (nodes.length > 0) {
             const nodeId = nodes[0]
@@ -114,38 +127,51 @@ export default {
     },
     getSpanList () {
       return new Promise((resolve, reject) => {
-        getNodesAndEdges({ trace_id: this.id }).then((res) => {
-          this.nodes = res.data[0]
-          this.edges = res.data[1]
-          resolve() // 解决 Promise
-          // 进行其他操作，如果需要的话
-        }).catch((error) => {
-          reject(error) // 拒绝 Promise
-        })
+        getNodesAndEdges({ trace_id: this.id })
+          .then((res) => {
+            this.nodes = res.data[0]
+            this.edges = res.data[1]
+            resolve() // 解决 Promise
+            // 进行其他操作，如果需要的话
+          })
+          .catch((error) => {
+            reject(error) // 拒绝 Promise
+          })
       })
     },
     abnormalLabel () {
-      abnormalLabelRequest({trace_id: this.id, span_id: this.selectedNodeId}).then((res) => {
-        alert(1)
-        this.dialogVisible = false
+      abnormalLabelRequest({
+        trace_id: this.id,
+        span_id: this.selectedNodeId
+      }).then((res) => {
+        this.next()
       })
+    },
+    next () {
+      this.dialogVisible = false
+      this.radio = -1
+      this.$emit('transfer', this.id) // 触发transfer方法 为向父组件传递的数据
     }
   },
   mounted () {
-    this.getSpanList().then(() => {
-      this.createTopology()// testList 值
-    }).catch((error) => {
-      console.error('Error while fetching data:', error)
-    })
+    this.getSpanList()
+      .then(() => {
+        this.createTopology() // testList 值
+      })
+      .catch((error) => {
+        console.error('Error while fetching data:', error)
+      })
   },
   watch: {
     id () {
       console.log('id changed')
-      this.getSpanList().then(() => {
-        this.createTopology()
-      }).catch((error) => {
-        console.error('Error while fetching data:', error)
-      })
+      this.getSpanList()
+        .then(() => {
+          this.createTopology()
+        })
+        .catch((error) => {
+          console.error('Error while fetching data:', error)
+        })
     }
   }
 }
@@ -168,7 +194,10 @@ export default {
   flex-direction: row-reverse;
   justify-content: space-between;
 }
-.button-box button{
-    margin-right: 1rem;
+.button-box button {
+  margin-right: 1rem;
+}
+.dialog-box div {
+  margin: 15px;
 }
 </style>
