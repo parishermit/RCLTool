@@ -39,57 +39,7 @@ INSTALLED_APPS = [
     'trace_app',
 ]
 
-CORS_ALLOW_CREDENTIALS = True
-
 CORS_ORIGIN_ALLOW_ALL = True
-
-CORS_ORIGIN_WHITELIST = (
-    '*'
-)
-
-CORS_ALLOW_METHODS = (
-
-    'DELETE',
-
-    'GET',
-
-    'OPTIONS',
-
-    'PATCH',
-
-    'POST',
-
-    'PUT',
-
-    'VIEW',
-
-)
-
-CORS_ALLOW_HEADERS = (
-
-    'XMLHttpRequest',
-
-    'X_FILENAME',
-
-    'accept-encoding',
-
-    'authorization',
-
-    'content-type',
-
-    'dnt',
-
-    'origin',
-
-    'user-agent',
-
-    'x-csrftoken',
-
-    'x-requested-with',
-
-    'Pragma',
-
-)
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -133,7 +83,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'rcltool',
         'USER': 'root',
-        'PASSWORD': 'wangjiaju',
+        'PASSWORD': 'password',
         'HOST': 'localhost',
         'PORT': '3306',
     }
