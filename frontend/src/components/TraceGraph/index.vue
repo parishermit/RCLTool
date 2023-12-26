@@ -7,7 +7,7 @@
         <div class="detail">
           <label-black value="Start Time"></label-black>
           <div style="margin-right: 10px;">{{spanList[0].startTime}}</div>
-          <label-black value="Duratiob"></label-black>
+          <label-black value="Duration"></label-black>
           <div>{{spanList[0].duration}} ms</div>
         </div>
       </div>

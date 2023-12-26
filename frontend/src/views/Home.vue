@@ -2,10 +2,9 @@
   <div class="main">
     <div class="left">
       <LeftMenu class="LeftMenu"
-                :trace_list="traceList"
+                :traceList="traceList"
                 :unlabeled_trace_list="unlabeledTraceList"
-                :selectedTraceId="selectedTraceId"
-                @transfer="getSelectedTraceId"></LeftMenu>
+                @trace-selected="handleTraceSelected"></LeftMenu>
     </div>
 
     <div class="right">
@@ -26,7 +25,8 @@
 import LeftMenu from '@/components/LeftMenu.vue'
 import Topology from '@/components/Topology.vue'
 import TraceGraph from '@/components/TraceGraph/index.vue'
-import { gettracelist } from '@/api/trace.js'
+import { getTraceList } from '@/api/trace.js'
+
 export default {
   components: {
     LeftMenu,
@@ -41,13 +41,20 @@ export default {
     }
   },
   methods: {
-    getTracelist () {
-      gettracelist().then((res) => {
-        this.traceList = res.data
+    getTraceList () {
+      return new Promise((resolve, reject) => {
+        getTraceList().then((res) => {
+          this.traceList = res.data
+          resolve() // 解决 Promise
+          // 进行其他操作，如果需要的话
+        }).catch((error) => {
+          reject(error) // 拒绝 Promise
+        })
       })
     },
-    getSelectedTraceId (msg) {
-      this.selectedTraceId = msg
+    handleTraceSelected (selectedTraceId) {
+      this.selectedTraceId = selectedTraceId
+      console.log('home select trace id', selectedTraceId)
     },
     labelSuccessfully (labeledTraceId) {
       for (let i = this.traceList.length - 1; i >= 0; i--) {
@@ -62,8 +69,12 @@ export default {
       }
     }
   },
-  mounted () {
-    this.getTracelist()
+  created () {
+    this.getTraceList().then(() => {
+      console.log('tracelist', this.traceList) // 输出 testList 值
+    }).catch((error) => {
+      console.error('Error while fetching data:', error)
+    })
   }
 }
 </script>
@@ -71,25 +82,41 @@ export default {
 <style scoped>
 .main {
   display: flex;
+  justify-content: space-between;
+  width: 100%;
+  height: 96vh;
+  margin: 0;
+  padding: 0;
 }
 .left {
   width: 20%;
-  height: 100vh;
-}
-.right {
-  width: 80%;
-  height: 100vh;
-  justify-content: space-between;
+  height: 100%;
 }
 .LeftMenu {
   height: 100%;
 }
-.topology {
-  border: 1px rgb(147, 145, 145) solid;
-  height: 42vh;
+.right {
+  width: 79%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.right-top {
   width: 100%;
-  border-radius: 20px;
-  margin: 1em;
-  /* width: 100%; */
+  height: 48%;
+  border: 1px rgb(147, 145, 145) solid;
+  border-radius: 8px;
+}
+.topology {
+  height: 100%;
+  width: 100%;
+}
+.right-bottom {
+  width: 100%;
+  height: 48%;
+  overflow-y: auto;
+  border: 1px rgb(147, 145, 145) solid;
+  border-radius: 8px;
 }
 </style>

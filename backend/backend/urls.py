@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, re_path
 from django.views.generic.base import TemplateView
-from trace_app.views import TraceView, DataProcess,ModifyDB
+from trace_app.views import TraceView, DataProcess, ModifyDB
 
 
 urlpatterns = [

@@ -59,11 +59,11 @@
               <div class="pillar"
                     :style="{
                   'background-color': getSpanColor(span),
-                  width: (span.duration / totalDuration) * 350 + 'px',
+                  width: (span.duration / totalDuration) * 450 + 'px',
                   'margin-right':
                     ((endTime - span.duration - span.timestamp) /
                       totalDuration) *
-                      350 +
+                      450 +
                     15 +
                     'px',
                 }"></div>

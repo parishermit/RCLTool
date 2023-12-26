@@ -16,7 +16,7 @@ export function getNodesAndEdges (params) {
   })
 }
 
-export function gettracelist (params) {
+export function getTraceList (params) {
   return request({
     url: '/gettracelist',
     method: 'get',
@@ -27,6 +27,30 @@ export function gettracelist (params) {
 export function abnormalLabelRequest (params) {
   return request({
     url: '/getRootCause',
+    method: 'get',
+    params
+  })
+}
+
+export function uploadData (params) {
+  return request({
+    url: '/getdata',
+    method: 'post',
+    params
+  })
+}
+
+export function downloadTrace (params) {
+  return request({
+    url: '/outputtracecsv',
+    method: 'get',
+    params
+  })
+}
+
+export function downloadGroundtruth (params) {
+  return request({
+    url: '/outputrclcsv',
     method: 'get',
     params
   })

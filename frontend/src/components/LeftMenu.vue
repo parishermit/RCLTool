@@ -1,51 +1,27 @@
 <template>
 
   <div class="left-container">
-    <div class="left-image-box"><img class="left-image"
-           src="../assets/nku.png"
-           alt=""></div>
+    <div class="left-image-box">
+      <img class="left-image" src="../assets/nku.png" alt="">
+    </div>
     <div class="menu-box">
-      <div class="menu-item">
-        <div @click="chosedEmun3=!chosedEmun3"
-             class="menu-item-tag">
-          <div><i class="el-icon-s-finance"></i>
-            <span>List of Unlabeled Traces</span>
-          </div>
-          <img class="menu-chosed-icon"
-               :src="chosedEmun3?upImage:downImage"
-               alt="">
-        </div>
-        <div class="sub-enmu-box"
-             v-if="chosedEmun3">
-          <div v-for="(item, index) in trace_list"
-               :key="index"
-               :class="selectedTraceId==item?'sub-enmu-item active-item':'sub-enmu-item'"
-               @click="choseSelectedTraceId(item)">Trace {{item}}</div>
-
+      <div class="menu-item"
+        v-for="(traceId, index) in traceList"
+        :key="index"
+        @click="setSelectedTraceId(traceId)">
+        <div>
+          <span>{{ traceId }}</span>
         </div>
       </div>
-
-      <div class="menu-item">
-        <div @click="chosedEmun2=!chosedEmun2"
-             class="menu-item-tag">
-          <div><i class="el-icon-discover"></i>
-            <span>List of Labeled Traces</span>
-          </div>
-          <img class="menu-chosed-icon"
-               :src="chosedEmun2?upImage:downImage"
-               alt="">
-        </div>
-        <div class="sub-enmu-box"
-             v-if="chosedEmun2">
-          <div v-for="(item, index) in unlabeled_trace_list"
-               :key="index"
-               :class="selectedTraceId==item?'sub-enmu-item active-item':'sub-enmu-item'"
-               @click="choseSelectedTraceId(item)">Trace {{item}}</div>
-
-        </div>
-
-      </div>
-
+    </div>
+    <div class="upload">
+      <input type="file" ref="fileInput" style="display: none" @change="handleFileUpload">
+      <el-button type="primary" @click="chooseFile">选择文件</el-button>
+      <el-button type="primary" @click="uploadFile">上传</el-button>
+    </div>
+    <div class="export">
+      <el-button type="primary" @click="downloadGroundtruthCsv">导出groundtruth</el-button>
+      <el-button type="primary" @click="downloadTraceCsv">导出trace</el-button>
     </div>
   </div>
 
@@ -54,86 +30,140 @@
 <script>
 import upward from '../assets/upward.svg'
 import downward from '../assets/downward.svg'
-
+import { uploadData, downloadGroundtruth, downloadTrace } from '../api/trace.js'
+import { saveAs } from 'file-saver'
 export default {
   props: {
-    trace_list: [],
-    unlabeled_trace_list: [],
-    selectedTraceId: String
+    traceList: [],
+    unlabeled_trace_list: []
   },
   name: 'Manage',
   data () {
     return {
       upImage: upward,
       downImage: downward,
-      chosedEmun2: false,
-      chosedEmun3: false
+      selectedTraceId: '',
+      fileToUpload: null
     }
   },
   components: {},
-  methods: {
-    choseSelectedTraceId (Traceid) {
-      this.selectedTraceId = Traceid
-      this.$emit('transfer', Traceid) // 触发transfer方法 为向父组件传递的数据
-    }
+  mounted () {
+    console.log('leftmenu mounted', this.traceList)
+    this.selectedTraceId = this.traceList[0]
   },
-  mounted () {}
+  methods: {
+    setSelectedTraceId (id) {
+      this.selectedTraceId = id
+      console.log('select id', this.selectedTraceId)
+      this.$emit('trace-selected', id)
+    },
+    chooseFile () {
+      this.$refs.fileInput.click()
+    },
+    handleFileUpload (event) {
+      const file = event.target.files[0]
+      if (file) {
+        // 获取上传文件名
+        const fileName = file.name
+        // 检查文件名是否为 "trace.csv"
+        if (fileName === 'trace.csv') {
+          // 文件名合法，可以进行上传操作
+          this.fileToUpload = file
+        } else {
+          // 文件名不符合要求，给出提示或者阻止上传
+          alert('请上传名为 "trace.csv" 的文件')
+          this.$refs.fileInput.value = '' // 清空文件输入框
+        }
+      }
+    },
+    uploadFile () {
+      // 处理上传文件的逻辑
+      if (this.fileToUpload) {
+        // 执行上传操作
+        const formData = new FormData()
+        formData.append('trace.csv', this.fileToUpload)
+
+        uploadData(formData)
+          .then(response => {
+            // 处理后端返回的数据
+            console.log(response)
+            alert('文件上传成功！')
+          })
+          .catch(error => {
+            // 处理错误
+            console.error('文件上传失败：', error)
+            alert('文件上传失败！')
+          })
+      } else {
+        alert('请选择一个文件进行上传')
+      }
+    },
+    downloadTraceCsv () {
+      downloadTrace().then((response) => {
+        saveAs(new Blob([response]), 'trace.csv')
+      }).catch(error => {
+        console.error('下载失败:', error)
+      })
+    },
+    downloadGroundtruthCsv () {
+      downloadGroundtruth().then((response) => {
+        saveAs(new Blob([response]), 'groundtruth.csv')
+      }).catch(error => {
+        console.error('下载失败:', error)
+      })
+    }
+  }
 }
 </script>
 
 <style>
 .left-container {
+  height: 100%;
   color: rgba(255, 255, 255, 1);
   background-color: rgba(0, 33, 64, 1);
   font-size: 1.2em;
 }
 
+.left-image-box {
+  width: 100%;
+  height: 15%;
+  background-color: rgba(0, 33, 64, 1);
+}
 .left-image {
   width: 90%;
   margin: 15px 0;
 }
-.left-image-box {
+.menu-box{
   width: 100%;
-  height: 10vh;
-  background-color: rgba(0, 33, 64, 1);
-  margin-bottom: 2em;
-}
-.menu-box {
-  margin-top: 70px;
+  height: 65%;
+  overflow-y: auto;
 }
 .menu-item {
-  padding-top: 7px;
-  padding-bottom: 7px;
-  text-align: left;
-}
-.menu-chosed-icon {
-  display: inline;
-  width: 20px;
-  height: 25px;
-  margin-right: 20px;
-}
-
-.sub-enmu-box {
-  padding-top: 15px;
-}
-.sub-enmu-item {
-  padding-bottom: 0.6em;
-  padding-left: 60px;
-}
-.active-item {
-  background-color: rgb(2, 34, 63);
-  border-color: rgb(2, 34, 63);
-  color: rgba(24, 144, 255, 1);
-}
-.menu-item-tag {
-  padding-left: 30px;
+  height: 8vh;
+  width: 100%;
+  background-color: rgb(54, 90, 123);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
   display: flex;
-  justify-content: space-between;
+  align-items: center;
+  justify-content: center;
 }
-.menu-item:hover {
-  cursor: pointer;
+.upload {
+  height: 10%;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  flex-direction: row;
+  align-items: center;
 }
-.menu-item-tag div span {
-  margin-left: 1em;
+.export {
+  height: 10%;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  flex-direction: row;
+  align-items: center;
+}
+.left-bottom button {
+  height: 40px;
 }
 </style>

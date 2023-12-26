@@ -214,8 +214,11 @@ export default {
 <style scoped>
 .topology-main {
   position: relative;
+  width: 100%;
+  height: 100%;
 }
 .topomap {
+  width: 100%;
   height: 100%;
 }
 .button-box {

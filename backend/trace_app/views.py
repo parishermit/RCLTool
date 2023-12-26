@@ -122,7 +122,7 @@ class ModifyDB(View):
             # data = json.loads(request.body)
             trace_id = request.GET.get("trace_id")
             span_id = request.GET.get("span_id")
-            if Span.objects.get(span_id=span_id, trace_id=trace_id).label is 2:
+            if Span.objects.get(span_id=span_id, trace_id=trace_id).label == 2:
                 return JsonResponse({'isSuccess': 'false', 'info': '此调用链已标注，请检查!'}, safe=False, status=500)
             else:
                 root_cause_span = Span.objects.get(span_id=span_id, trace_id=trace_id)
@@ -131,7 +131,7 @@ class ModifyDB(View):
                 root_cause_span.save()
                 span_list = get_span_list(trace_id)
                 span_list = set(map(lambda x: x['span_id'], span_list))
-                while parent_span_id in span_list and parent_span_id is not "":
+                while parent_span_id in span_list and parent_span_id != "":
                     anomaly_span = Span.objects.get(span_id=parent_span_id, trace_id=trace_id)
                     parent_span_id = anomaly_span.parent_span
                     anomaly_span.label = 1
