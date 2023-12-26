@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, re_path
 from django.views.generic.base import TemplateView
-from trace_app.views import TraceView, DataProcess
+from trace_app.views import TraceView, DataProcess,ModifyDB
 
 
 urlpatterns = [
@@ -25,7 +25,7 @@ urlpatterns = [
     path('getspanlist', TraceView.get_span_list, name='getspanlist'),
     path('gettracelist', TraceView.get_trace_list, name='gettracelist'),
     path('getNodesAndEdges', TraceView.get_nodes_and_edges, name='getNodesAndEdges'),
-    path('abnormalLabel', TraceView.abnormal_label, name='abnormalLabel'),
+    path('getRootCause', ModifyDB.get_root_cause, name='getRootCause'),
     path('getdata', DataProcess.get_data, name='getdata'),
     path('outputtracecsv', DataProcess.output_trace_csv, name='outputtracecsv'),
     path('outputrclcsv', DataProcess.output_rcl_csv, name='outputrclcsv'),

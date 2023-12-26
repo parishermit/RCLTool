@@ -1,12 +1,18 @@
 <template>
   <div class="main">
-    <div class="left" >
-      <LeftMenu class="LeftMenu" :trace_list="traceList" @transfer="getSelectedTraceId"></LeftMenu>
+    <div class="left">
+      <LeftMenu class="LeftMenu"
+                :trace_list="traceList"
+                :unlabeled_trace_list="unlabeledTraceList"
+                :selectedTraceId="selectedTraceId"
+                @transfer="getSelectedTraceId"></LeftMenu>
     </div>
 
     <div class="right">
       <div class="right-top">
-        <Topology class="topology" :id="selectedTraceId"></Topology>
+        <Topology class="topology"
+                  :id="selectedTraceId"
+                  @transfer="labelSuccessfully"></Topology>
       </div>
       <div class="right-bottom">
         <trace-graph :id="selectedTraceId" />
@@ -30,14 +36,11 @@ export default {
   data () {
     return {
       traceList: [],
+      unlabeledTraceList: [],
       selectedTraceId: ''
     }
   },
   methods: {
-    changeTraceId () {
-      this.selectedTraceId = '1234'
-      console.log(this.selectedTraceId)
-    },
     getTracelist () {
       gettracelist().then((res) => {
         this.traceList = res.data
@@ -45,6 +48,18 @@ export default {
     },
     getSelectedTraceId (msg) {
       this.selectedTraceId = msg
+    },
+    labelSuccessfully (labeledTraceId) {
+      for (let i = this.traceList.length - 1; i >= 0; i--) {
+        if (this.traceList[i] === labeledTraceId) {
+          this.unlabeledTraceList.push(this.traceList.splice(i, 1)[0])
+          if (this.traceList.length > 0) {
+            this.selectedTraceId =
+              this.traceList[Math.floor(Math.random() * this.traceList.length)]
+          } else this.selectedTraceId = -1
+          break
+        }
+      }
     }
   },
   mounted () {
