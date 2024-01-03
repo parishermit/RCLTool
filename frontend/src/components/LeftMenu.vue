@@ -68,6 +68,7 @@ export default {
         if (fileName === 'trace.csv') {
           // 文件名合法，可以进行上传操作
           this.fileToUpload = file
+          alert('文件选择成功！')
         } else {
           // 文件名不符合要求，给出提示或者阻止上传
           alert('请上传名为 "trace.csv" 的文件')
@@ -87,6 +88,7 @@ export default {
             // 处理后端返回的数据
             console.log(response)
             alert('文件上传成功！')
+            location.reload()
           })
           .catch(error => {
             // 处理错误
