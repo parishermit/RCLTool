@@ -72,7 +72,7 @@ class DataProcess(View):
             data_list = []
             for line in lines:
                 try:
-                    fields = line.split(",")
+                    fields = line.strip().split(",")
                     data_dict = {"timestamp": fields[0], "cmdb_id": fields[1], "span_id": fields[2],
                                 "trace_id": fields[3], "duration": fields[4], "type": fields[5],
                                 "status_code": fields[6], "operation_name": fields[7], "parent_span": fields[8],
