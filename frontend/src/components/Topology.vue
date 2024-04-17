@@ -1,38 +1,17 @@
 <template>
   <div class="topology-main">
-    <div ref="network"
-         class="topomap"></div>
-    <div class="button-box">
-      <el-button type="primary"
-                 @click="next">Skip</el-button>
+    <div ref="network" class="topomap">
+
+
     </div>
-    <el-dialog title="Tip"
-               :visible.sync="dialogVisible"
-               width="30%"
-               center>
-      <div class='dialog-box'>
-        <div>Please select the fault type:</div>
-        <div>
-          <el-radio-group v-model="radio">
-            <el-radio :label="1">Time Anomaly</el-radio>
-            <el-radio :label="2">Structural Anomaly</el-radio>
-            <el-radio :label="3">Network</el-radio>
-          </el-radio-group>
-        </div>
+    <div style="position: absolute;top: 20px;left: 20px;">Topological Relationship Diagram</div>
+    <div style="position: absolute;top: 20px;left: 0px;width: 2px;background-color: rgb(89,163,253);">&nbsp;</div>
+    <div class="button-box">
+      <el-button type="primary" @click="Normal" size="mini" round>Normal</el-button>
+      <el-button type="primary" @click="Abnormal" size="mini" round>Abnormal</el-button>
+    </div>
 
-        <div>Determine whether to mark the Trace as an exception?</div>
-      </div>
-
-      <span slot="footer"
-            class="dialog-footer">
-        <el-button @click="dialogVisible = false">Cancel</el-button>
-        <el-button type="primary"
-                   @click="abnormalLabel">Confirm</el-button>
-      </span>
-    </el-dialog>
-
-    <div id="customTooltip"
-         class="custom-tooltip"></div>
+    <div id="customTooltip" class="custom-tooltip"></div>
   </div>
 </template>
 
@@ -43,7 +22,7 @@ export default {
   props: {
     id: String
   },
-  data () {
+  data() {
     return {
       nodes: [],
       edges: [],
@@ -66,7 +45,11 @@ export default {
     }
   },
   methods: {
-    createTopology () {
+    Normal(){
+      this.$emit('update-value', this.id);
+      
+    },
+    createTopology() {
       {
         // 创建拓扑图
         const container = this.$refs.network
@@ -75,15 +58,15 @@ export default {
           edges: this.edges
         }
 
-        // const options = {}; // 根据需要设置图形的选项
+        // 根据需要设置图形的选项
         const options = {
           // zoom: 5,
           // 节点样式
-          // nodes: {
-          //   size: 60,
-          //   borderWidth: 2,
-          //   color: {},
-          // },
+          nodes: {
+            size: 1000,
+            borderWidth: 2,
+            color: {},
+          },
           // 连接线的样式
           edges: {
             color: {
@@ -156,11 +139,11 @@ export default {
         })
       }
     },
-    showSelectionDialog (nodeId) {
+    showSelectionDialog(nodeId) {
       this.selectedNodeId = nodeId
       this.dialogVisible = true
     },
-    getSpanList () {
+    getSpanList() {
       return new Promise((resolve, reject) => {
         getNodesAndEdges({ trace_id: this.id })
           .then((res) => {
@@ -174,7 +157,7 @@ export default {
           })
       })
     },
-    abnormalLabel () {
+    abnormalLabel() {
       abnormalLabelRequest({
         trace_id: this.id,
         span_id: this.selectedNodeId
@@ -182,13 +165,13 @@ export default {
         this.next()
       })
     },
-    next () {
+    next() {
       this.dialogVisible = false
       this.radio = -1
       this.$emit('transfer', this.id) // 触发transfer方法 为向父组件传递的数据
     }
   },
-  mounted () {
+  mounted() {
     this.getSpanList()
       .then(() => {
         this.createTopology() // testList 值
@@ -198,7 +181,7 @@ export default {
       })
   },
   watch: {
-    id () {
+    id() {
       this.getSpanList()
         .then(() => {
           this.createTopology()
@@ -217,13 +200,16 @@ export default {
   width: 100%;
   height: 100%;
 }
+
 .topomap {
   width: 100%;
   height: 100%;
+  position: relative;
 }
+
 .button-box {
-  width: 15%;
-  height: 40px;
+  /* width: 15%;
+  height: 40px; */
   position: absolute;
   bottom: 1em;
   right: 1em;
@@ -231,12 +217,15 @@ export default {
   flex-direction: row-reverse;
   justify-content: space-between;
 }
+
 .button-box button {
   margin-right: 1rem;
 }
+
 .dialog-box div {
   margin: 15px;
 }
+
 /* 悬浮框的样式 */
 .custom-tooltip {
   position: absolute;

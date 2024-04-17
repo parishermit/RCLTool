@@ -1,28 +1,46 @@
 <template>
 
   <div class="left-container">
-    <div class="left-image-box">
-      <img class="left-image" src="../assets/nku.png" alt="">
+    <!-- <div class="left-image-box">
+      <img class="left-image" src="../assets/logo.png" alt="">
+    </div> -->
+    <div style="display: flex;margin: 10px 0;">
+      <div style="width: 2px;background-color: rgb(88,162,252);"></div>
+      <div style="color: black; font-size: 16px;">&nbsp;&nbsp;&nbsp;Task</div>
     </div>
+
+    <div style="display: flex;margin: 24px 0;align-items: center;">
+      <div style="color: #516571; font-size: 16px;margin-right: 25px;">&nbsp;&nbsp;&nbsp;&nbsp;Select task</div>
+      <select v-model="selectedTask" style="width: 120px; height: 30px; border-radius: 10px; padding: 5px;">
+        <!-- <option v-for="(task, index) in taskList" :key="index" :value="task.task_id">{{ task.task_id + ' ' + task.task_name }}</option> -->
+        <option value="a">Task 1</option>
+        <option value="b">Task 2</option>
+        <option value="c">Task 3</option>
+      </select>
+    </div>
+
     <div class="menu-box">
-      <div class="menu-item"
-        v-for="(traceId, index) in traceList"
-        :key="index"
-        @click="setSelectedTraceId(traceId)">
-        <div>
-          <span>{{ traceId }}</span>
+      <div style="display: flex;margin: 10px 0;">
+        <div style="width: 2px;background-color: rgb(88,162,252);"></div>
+        <div style="color: black; font-size: 16px;">&nbsp;&nbsp;&nbsp;Trace List</div>
+
+      </div>
+      <div class="menu-item" v-for="(traceId, index) in traceList" :key="index" @click="setSelectedTraceId(traceId)">
+        <div style="display: flex;justify-content:center">
+          <div style="width: 100px; white-space: nowrap; overflow: hidden;" :class="{ 'red-text': sharedValue === traceId }">{{ traceId }}</div>
         </div>
       </div>
     </div>
     <div class="upload">
-      <input type="file" ref="fileInput" style="display: none" @change="handleFileUpload">
-      <el-button type="primary" @click="chooseFile">选择文件</el-button>
-      <el-button type="primary" @click="uploadFile">上传</el-button>
+      <!-- <input type="file" ref="fileInput" style="display: none" @change="handleFileUpload">
+      <el-button type="primary" size="mini" @click="chooseFile" round>选择文件</el-button>
+      <el-button type="primary" size="mini" @click="uploadFile" round>上传</el-button> -->
+      <el-button type="primary" size="mini" @click="downloadTraceCsv" round style="margin-top: 10%;"> Export trace </el-button>
     </div>
-    <div class="export">
-      <el-button type="primary" @click="downloadGroundtruthCsv">导出groundtruth</el-button>
-      <el-button type="primary" @click="downloadTraceCsv">导出trace</el-button>
-    </div>
+
+    <!-- <div class="export">
+      <el-button type="primary" size="mini" @click="downloadGroundtruthCsv" round>导出groundtruth</el-button>
+    </div> -->
   </div>
 
 </template>
@@ -33,11 +51,16 @@ import downward from '../assets/downward.svg'
 import { uploadData, downloadGroundtruth, downloadTrace } from '../api/trace.js'
 export default {
   props: {
+    
     traceList: [],
-    unlabeled_trace_list: []
+    unlabeled_trace_list: [],
+    sharedValue: {
+      type: String,
+      default: ''
+    },
   },
   name: 'Manage',
-  data () {
+  data() {
     return {
       upImage: upward,
       downImage: downward,
@@ -46,60 +69,31 @@ export default {
     }
   },
   components: {},
-  mounted () {
+  mounted() {
     console.log('leftmenu mounted', this.traceList)
     this.selectedTraceId = this.traceList[0]
   },
+  watch: {
+    id (newVal) {
+      console.log('new'+ newVal )
+      this.selectedTraceId = newVal;
+      this.fetchList(newVal)
+    }
+  },
   methods: {
-    setSelectedTraceId (id) {
+    SetValue() {
+      console.log(1);
+    },
+    setSelectedTraceId(id) {
       this.selectedTraceId = id
       console.log('select id', this.selectedTraceId)
       this.$emit('trace-selected', id)
     },
-    chooseFile () {
+    chooseFile() {
       this.$refs.fileInput.click()
     },
-    handleFileUpload (event) {
-      const file = event.target.files[0]
-      if (file) {
-        // 获取上传文件名
-        const fileName = file.name
-        // 检查文件名是否为 "trace.csv"
-        if (fileName === 'trace.csv') {
-          // 文件名合法，可以进行上传操作
-          this.fileToUpload = file
-          alert('文件选择成功！')
-        } else {
-          // 文件名不符合要求，给出提示或者阻止上传
-          alert('请上传名为 "trace.csv" 的文件')
-          this.$refs.fileInput.value = '' // 清空文件输入框
-        }
-      }
-    },
-    uploadFile () {
-      // 处理上传文件的逻辑
-      if (this.fileToUpload) {
-        // 执行上传操作
-        const formData = new FormData()
-        formData.append('trace.csv', this.fileToUpload)
 
-        uploadData(formData)
-          .then(response => {
-            // 处理后端返回的数据
-            console.log(response)
-            alert('文件上传成功！')
-            location.reload()
-          })
-          .catch(error => {
-            // 处理错误
-            console.error('文件上传失败：', error)
-            alert('文件上传失败！')
-          })
-      } else {
-        alert('请选择一个文件进行上传')
-      }
-    },
-    downloadTraceCsv () {
+    downloadTraceCsv() {
       downloadTrace().then((response) => {
         const url = window.URL.createObjectURL(new Blob([response.data]))
         const link = document.createElement('a')
@@ -112,7 +106,7 @@ export default {
         console.error('下载失败:', error)
       })
     },
-    downloadGroundtruthCsv () {
+    downloadGroundtruthCsv() {
       downloadGroundtruth().then((response) => {
         const url = window.URL.createObjectURL(new Blob([response.data]))
         const link = document.createElement('a')
@@ -130,53 +124,84 @@ export default {
 </script>
 
 <style>
+.red-text{
+  color: red;
+}
 .left-container {
-  height: 100%;
+  height: 80hv;
   color: rgba(255, 255, 255, 1);
-  background-color: rgba(0, 33, 64, 1);
+  /* background-color: white; */
   font-size: 1.2em;
+  border-radius: 8px;
 }
 
 .left-image-box {
-  width: 100%;
+  width: 75%;
   height: 15%;
-  background-color: rgba(0, 33, 64, 1);
+  background-color: white;
 }
+
 .left-image {
   width: 90%;
   margin: 15px 0;
 }
-.menu-box{
+
+.menu-box {
   width: 100%;
-  height: 65%;
+  height: 75%;
   overflow-y: auto;
+  overflow-x: hidden;
 }
+
 .menu-item {
-  height: 8vh;
+
   width: 100%;
-  background-color: rgb(54, 90, 123);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
-  display: flex;
+  white-space: nowrap;
+  /* 不换行 */
+  overflow: hidden;
+  /* 溢出部分隐藏 */
+  font-size: 15px;
+  color: #555555;
+  background-color: white;
+  max-width: 380px;
+  padding: 5px 10px;
+  line-height: 25px;
+  border-bottom: 1px solid #ccc;
+  /* border-bottom: 1px solid rgb(54, 90, 123); */
+  /* display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: center; */
 }
+
+.menu-item:hover {
+  background-color: rgb(233, 246, 255);
+  border-color: rgb(233, 246, 255)
+    /* 悬停时将按钮的背景色修改为灰色 */
+}
+
 .upload {
-  height: 10%;
   width: 100%;
-  display: flex;
-  justify-content: space-around;
-  flex-direction: row;
-  align-items: center;
+  /* display: flex;
+  align-items: center; */
+  text-align: center;
 }
+
 .export {
-  height: 10%;
+  /* height: 10%; */
   width: 100%;
   display: flex;
-  justify-content: space-around;
-  flex-direction: row;
-  align-items: center;
+
 }
+
 .left-bottom button {
   height: 40px;
+}
+
+.el-button {}
+
+.el-button:hover {
+  background-color: gray;
+  border-color: gray
+    /* 悬停时将按钮的背景色修改为灰色 */
 }
 </style>

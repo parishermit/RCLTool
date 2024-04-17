@@ -21,9 +21,9 @@
       </div>
     </div>
     <trace-graph-list v-if="tabIndex === 0"
-                      :spanList="spanList"></trace-graph-list>
+                      :id="selectedTraceId"></trace-graph-list>
     <trace-graph-table v-if="tabIndex === 1"
-                        :spanList="spanList"></trace-graph-table>
+                        :spanList="spanList" :id="selectedTraceId"></trace-graph-table>
   </div>
 </template>
 
@@ -47,7 +47,8 @@ export default {
   data () {
     return {
       tabIndex: 0,
-      spanList: []
+      spanList: [],
+      selectedTraceId:""
     }
   },
   created () {
@@ -69,7 +70,7 @@ export default {
               span[toHump(key)] = value
             })
             span.startTime = new Date(
-              Math.round(span.timestamp / 1000)
+              Math.round(span.timestamp )
             ).toLocaleString()
           })
           resolve() // 解决 Promise
@@ -81,8 +82,10 @@ export default {
     }
   },
   watch: {
-    id () {
+    id (newVal) {
       console.log('id changed')
+      this.selectedTraceId = newVal;
+      console.log(this.selectedTraceId);
       this.getSpanList().then(() => {
         console.log('span', this.spanList)
       }).catch((error) => {

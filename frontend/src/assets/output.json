@@ -1,0 +1,78 @@
+{
+    "nodes": [
+        {
+            "id": "1",
+            "label": "frontend2-0"
+        },
+        {
+            "id": "2",
+            "label": "productcatalogservice2-0"
+        },
+        {
+            "id": "3",
+            "label": "currencyservice2-0"
+        },
+        {
+            "id": "4",
+            "label": "cartservice2-0"
+        },
+        {
+            "id": "5",
+            "label": "recommendationservice2-0"
+        },
+        {
+            "id": "6",
+            "label": "productcatalogservice-1"
+        },
+        {
+            "id": "7",
+            "label": "adservice2-0"
+        },
+        {
+            "id": "8",
+            "label": "productcatalogservice-2"
+        }
+    ],
+    "edges": [
+        {
+            "from": "1",
+            "to": "1"
+        },
+        {
+            "from": "1",
+            "to": "2"
+        },
+        {
+            "from": "1",
+            "to": "3"
+        },
+        {
+            "from": "1",
+            "to": "4"
+        },
+        {
+            "from": "4",
+            "to": "4"
+        },
+        {
+            "from": "5",
+            "to": "5"
+        },
+        {
+            "from": "1",
+            "to": "5"
+        },
+        {
+            "from": "5",
+            "to": "6"
+        },
+        {
+            "from": "1",
+            "to": "7"
+        },
+        {
+            "from": "5",
+            "to": "8"
+        }
+    ]
+}

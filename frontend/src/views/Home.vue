@@ -1,24 +1,23 @@
 <template>
-  <div class="main">
-    <div class="left">
-      <LeftMenu class="LeftMenu"
-                :traceList="traceList"
-                :unlabeled_trace_list="unlabeledTraceList"
-                @trace-selected="handleTraceSelected"></LeftMenu>
-    </div>
-
-    <div class="right">
-      <div class="right-top">
-        <Topology class="topology"
-                  :id="selectedTraceId"
-                  @transfer="labelSuccessfully"></Topology>
+  <el-main style="background-color: #F5F8FA;">
+    <div class="main">
+      <div class="left">
+        <LeftMenu class="LeftMenu" :traceList="traceList" :unlabeled_trace_list="unlabeledTraceList" :sharedValue="sharedValue"
+          @trace-selected="handleTraceSelected"></LeftMenu>
       </div>
-      <div class="right-bottom">
-        <trace-graph :id="selectedTraceId" />
-      </div>
-    </div>
 
-  </div>
+      <div class="right">
+        <div class="right-top">
+          <Topology class="topology" :id="selectedTraceId" @transfer="labelSuccessfully" @update-value="updateValueInB"></Topology>
+        </div>
+        <div class="right-bottom">
+          <trace-graph :id="selectedTraceId" />
+        </div>
+      </div>
+
+    </div>
+  </el-main>
+
 </template>
 
 <script>
@@ -33,15 +32,19 @@ export default {
     Topology,
     TraceGraph
   },
-  data () {
+  data() {
     return {
       traceList: [],
       unlabeledTraceList: [],
-      selectedTraceId: ''
+      selectedTraceId: '',
+      sharedValue:""
     }
   },
   methods: {
-    getTraceList () {
+    updateValueInB(newValue) {
+      this.sharedValue = newValue; // 更新sharedValue的值
+    },
+    getTraceList() {
       return new Promise((resolve, reject) => {
         getTraceList().then((res) => {
           this.traceList = res.data
@@ -52,14 +55,14 @@ export default {
         })
       })
     },
-    handleTraceSelected (selectedTraceId) {
+    handleTraceSelected(selectedTraceId) {
       this.selectedTraceId = selectedTraceId
       console.log('home select trace id', selectedTraceId)
     },
-    labelSuccessfully (labeledTraceId) {
+    labelSuccessfully(labeledTraceId) {
       for (let i = this.traceList.length - 1; i >= 0; i--) {
         if (this.traceList[i] === labeledTraceId) {
-          this.unlabeledTraceList.push(this.traceList.splice(i, 1)[0])
+          // this.unlabeledTraceList.push(this.traceList.splice(i, 1)[0])
           if (this.traceList.length > 0) {
             this.selectedTraceId =
               this.traceList[Math.floor(Math.random() * this.traceList.length)]
@@ -69,7 +72,7 @@ export default {
       }
     }
   },
-  created () {
+  created() {
     this.getTraceList().then(() => {
       console.log('tracelist', this.traceList) // 输出 testList 值
     }).catch((error) => {
@@ -80,6 +83,8 @@ export default {
 </script>
 
 <style scoped>
+
+
 .main {
   display: flex;
   justify-content: space-between;
@@ -87,36 +92,50 @@ export default {
   height: 96vh;
   margin: 0;
   padding: 0;
+  background-color:white;
 }
+
 .left {
-  width: 21%;
+  width: 18%;
   height: 100%;
+  border: 1px rgb(147, 145, 145) solid;
+  border-radius: 8px;
+
 }
+
 .LeftMenu {
   height: 100%;
 }
+
 .right {
-  width: 78%;
+  width: 81%;
   height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
+
 .right-top {
   width: 100%;
   height: 48%;
   border: 1px rgb(147, 145, 145) solid;
   border-radius: 8px;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+
 .topology {
   height: 100%;
   width: 100%;
 }
+
 .right-bottom {
   width: 100%;
   height: 48%;
   overflow-y: auto;
   border: 1px rgb(147, 145, 145) solid;
   border-radius: 8px;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 </style>

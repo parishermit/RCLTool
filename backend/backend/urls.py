@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, re_path
 from django.views.generic.base import TemplateView
-from trace_app.views import TraceView, DataProcess, ModifyDB
+from trace_app.views import TraceView, DataProcess, ModifyDB, Test, TaskDB, List
 
 
 urlpatterns = [
@@ -29,5 +29,10 @@ urlpatterns = [
     path('getdata', DataProcess.get_data, name='getdata'),
     path('outputtracecsv', DataProcess.output_trace_csv, name='outputtracecsv'),
     path('outputrclcsv', DataProcess.output_rcl_csv, name='outputrclcsv'),
+    path('get_res', Test.get_res, name='get_res'),
+    path('save_task', TaskDB.save_task, name='save_task'),
+    path('get_task', TaskDB.get_task, name='get_task'),
+    path('upload', TaskDB.upload, name='upload'),
+    path('get_tree', List.get_tree, name='get_tree'),
     re_path(r'^$', TemplateView.as_view(template_name='index.html'))
 ]

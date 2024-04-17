@@ -60,3 +60,35 @@ export function downloadGroundtruth (params) {
     params
   })
 }
+
+export function testGetRes (params) {
+  return request({
+    url: '/get_res',
+    method: 'get',
+    params
+  })
+}
+
+export function saveTask (params) {
+  return request({
+    url: '/save_task',
+    method: 'get',
+    params
+  })
+}
+
+export function getTask (params) {
+  return request({
+    url: '/get_task',
+    method: 'get',
+    params
+  })
+}
+
+export function getTree (params) {
+  return request({
+    url: '/get_tree',
+    method: 'get',
+    params
+  })
+}
