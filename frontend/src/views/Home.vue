@@ -3,12 +3,15 @@
     <div class="main">
       <div class="left">
         <LeftMenu class="LeftMenu" :traceList="traceList" :unlabeled_trace_list="unlabeledTraceList" :sharedValue="sharedValue"
+        :type="type"
           @trace-selected="handleTraceSelected"></LeftMenu>
       </div>
 
       <div class="right">
         <div class="right-top">
-          <Topology class="topology" :id="selectedTraceId" @transfer="labelSuccessfully" @update-value="updateValueInB"></Topology>
+          <Topology class="topology" :id="selectedTraceId" @transfer="labelSuccessfully" @update-value="updateValueInB"
+          @update-type="updateType"
+          ></Topology>
         </div>
         <div class="right-bottom">
           <trace-graph :id="selectedTraceId" />
@@ -37,12 +40,16 @@ export default {
       traceList: [],
       unlabeledTraceList: [],
       selectedTraceId: '',
-      sharedValue:""
+      sharedValue:"",
+      type:""
     }
   },
   methods: {
     updateValueInB(newValue) {
       this.sharedValue = newValue; // 更新sharedValue的值
+    },
+    updateType(newValue) {
+      this.type = newValue; 
     },
     getTraceList() {
       return new Promise((resolve, reject) => {

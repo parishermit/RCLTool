@@ -46,8 +46,12 @@ export default {
   },
   methods: {
     Normal(){
-      this.$emit('update-value', this.id);
-      
+      this.$emit('update-type', "Normal");
+      this.$emit('update-value', Date.now()+","+this.id);
+    },
+    Abnormal(){
+      this.$emit('update-type', "Abnormal");
+      this.$emit('update-value', Date.now()+","+this.id);
     },
     createTopology() {
       {

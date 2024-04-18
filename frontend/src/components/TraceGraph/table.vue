@@ -1,10 +1,10 @@
 <template>
   <div>
     <el-table v-loading="loading" :data="data" row-key="id"
-      :tree-props="{ children: 'children', hasChildren: 'hasChildren' }">
-      <el-table-column label="Method" prop="operation_name" />
+      :tree-props="{ children: 'children', hasChildren: 'hasChildren' }" default-expand-all>
+      <el-table-column label="Method" prop="operation_name" width="600"/>
       <el-table-column label="Duration(ms)" prop="duration" width="200" />
-      <el-table-column label="Service" prop="cmdb_id" width="150" />
+      <el-table-column label="Service" prop="cmdb_id" width="350" />
     </el-table>
   </div>
 </template>

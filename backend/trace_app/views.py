@@ -241,7 +241,6 @@ class TaskDB(View):
 class Test(View):   
     def get_res(request):
         querydata = Span.objects.all().values()
-        #print(list(querydata))
 
         data = {'data': list(querydata)}
         import csv
@@ -263,8 +262,7 @@ class Test(View):
                 table_A[row['span_id']] = cmdb_id_alpha
                 # 统计每种cmdb_id出现的次数
                 cmdb_id_counts[cmdb_id_alpha] += 1
-                
-        # print(cmdb_id_counts)
+
 
         for row in list(querydata):
             if 'cmdb_id' in row:  # 检查是否存在'cmdb_id'字段
@@ -310,11 +308,8 @@ class Test(View):
                 'Average Duration': average_duration
             })
 
-        for row in output_data:
-            print(row)
 
         data_processed = process_data(aggregated_data.items())
-        print(data_processed)
 
         return JsonResponse(data_processed, safe=False, status=200)
     
@@ -326,28 +321,39 @@ class List(View):
     def get_tree(request):
         querydata = Span.objects.all().values()
         trace_id = request.GET.get('trace_id')
-        print("=====================")
-        print(trace_id)
+        nodes = {}
+        data_temp = []
+        duration_list = []
+        duration_all_list = []
         lines = []
+        all_lines = []
+
+        for item in querydata:
+             one_line = (item['span_id'], item['parent_span'], item['cmdb_id'], item['duration'], item['operation_name'])
+             all_lines.append(one_line)  
+
         for item in querydata:
             if item['trace_id'] == trace_id:
 
                 line = (item['span_id'], item['parent_span'], item['cmdb_id'], item['duration'], item['operation_name'])
                 lines.append(line) 
-        nodes = {}
-        data_temp = []
-        duration_list = []
+
         for _,_,_,duration,_ in lines:
             duration_list.append(duration)
+        
+        for _,_,_,duration,_ in all_lines:
+            duration_all_list.append(duration)
 
-        min_duration = min(duration_list)
-        max_duration = max(duration_list)
+        min_duration = min(duration_all_list)
+        max_duration = max(duration_all_list)
+        print("=====================")
+        print(min_duration)
+        print(max_duration)
 
         for line in lines:
             id, parentId, cmdb_id, duration, operation_name = line
             # parentId为空，等于span_id，代表是根节点
             if parentId == "":
-                print(line)
                 parentId = id
             # nodes[]保存需要的字典格式
             nodes[id] = {'id': id, "parentId": parentId, "cmdb_id": cmdb_id, "duration": duration,

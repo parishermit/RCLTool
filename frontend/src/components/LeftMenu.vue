@@ -1,5 +1,4 @@
 <template>
-
   <div class="left-container">
     <!-- <div class="left-image-box">
       <img class="left-image" src="../assets/logo.png" alt="">
@@ -27,14 +26,11 @@
       </div>
       <div class="menu-item" v-for="(traceId, index) in traceList" :key="index" @click="setSelectedTraceId(traceId)">
         <div style="display: flex;justify-content:center">
-          <div style="width: 100px; white-space: nowrap; overflow: hidden;" :class="{ 'red-text': sharedValue === traceId }">{{ traceId }}</div>
+          <div class="" style="width: 100px; white-space: nowrap; overflow: hidden;" :class="getClass(traceId)" >{{ traceId }}</div>
         </div>
       </div>
     </div>
     <div class="upload">
-      <!-- <input type="file" ref="fileInput" style="display: none" @change="handleFileUpload">
-      <el-button type="primary" size="mini" @click="chooseFile" round>选择文件</el-button>
-      <el-button type="primary" size="mini" @click="uploadFile" round>上传</el-button> -->
       <el-button type="primary" size="mini" @click="downloadTraceCsv" round style="margin-top: 10%;"> Export trace </el-button>
     </div>
 
@@ -51,10 +47,13 @@ import downward from '../assets/downward.svg'
 import { uploadData, downloadGroundtruth, downloadTrace } from '../api/trace.js'
 export default {
   props: {
-    
     traceList: [],
     unlabeled_trace_list: [],
     sharedValue: {
+      type: String,
+      default: ''
+    },
+    type: {
       type: String,
       default: ''
     },
@@ -65,7 +64,8 @@ export default {
       upImage: upward,
       downImage: downward,
       selectedTraceId: '',
-      fileToUpload: null
+      fileToUpload: null,
+      id_list : {},
     }
   },
   components: {},
@@ -74,13 +74,32 @@ export default {
     this.selectedTraceId = this.traceList[0]
   },
   watch: {
+    sharedValue(newVal){
+      let arr = newVal.split(",");
+      console.log('arr=>'+ arr[1] )
+      // this.id_list[arr[1]] = this.type
+      this.$set(this.id_list, arr[1], this.type)
+      // this.id_list.push(newVal)
+      // const mySet = new Set(this.id_list);
+      // const uniqueArray = Array.from(mySet);
+      // this.id_list = uniqueArray
+      console.log('sharedValue=>'+ newVal )
+      console.log('type=>'+ this.type )
+      console.log(this.id_list)
+    },
     id (newVal) {
+
+      
       console.log('new'+ newVal )
       this.selectedTraceId = newVal;
       this.fetchList(newVal)
     }
   },
   methods: {
+    getClass(traceId) {
+    return this.id_list[traceId] === 'Abnormal' ? 'text-red' :
+           this.id_list[traceId] === 'Normal' ? 'text-green' : '';
+  },
     SetValue() {
       console.log(1);
     },
@@ -88,6 +107,7 @@ export default {
       this.selectedTraceId = id
       console.log('select id', this.selectedTraceId)
       this.$emit('trace-selected', id)
+      console.log(this.id_list)
     },
     chooseFile() {
       this.$refs.fileInput.click()
@@ -124,8 +144,11 @@ export default {
 </script>
 
 <style>
-.red-text{
+.text-red{
   color: red;
+}
+.text-green{
+  color: green;
 }
 .left-container {
   height: 80hv;
