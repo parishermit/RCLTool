@@ -24,14 +24,16 @@
         <div style="color: black; font-size: 16px;">&nbsp;&nbsp;&nbsp;Trace List</div>
 
       </div>
-      <div class="menu-item" v-for="(traceId, index) in traceList" :key="index" @click="setSelectedTraceId(traceId)">
+      <div class="menu-item" v-for="(traceId, index) in traceList" :key="index" @click="setSelectedTraceId(traceId)"  :class="getItem(traceId)">
         <div style="display: flex;justify-content:center">
-          <div class="" style="width: 100px; white-space: nowrap; overflow: hidden;" :class="getClass(traceId)" >{{ traceId }}</div>
+          <div class="" style="width: 100px; white-space: nowrap; overflow: hidden;" :class="getClass(traceId)">{{
+        traceId }}</div>
         </div>
       </div>
     </div>
     <div class="upload">
-      <el-button type="primary" size="mini" @click="downloadTraceCsv" round style="margin-top: 10%;"> Export trace </el-button>
+      <el-button type="primary" size="mini" @click="downloadTraceCsv" round style="margin-top: 10%;"> Export trace
+      </el-button>
     </div>
 
     <!-- <div class="export">
@@ -65,7 +67,8 @@ export default {
       downImage: downward,
       selectedTraceId: '',
       fileToUpload: null,
-      id_list : {},
+      id_list: {},
+      selectedItem: null,
     }
   },
   components: {},
@@ -74,32 +77,37 @@ export default {
     this.selectedTraceId = this.traceList[0]
   },
   watch: {
-    sharedValue(newVal){
+    sharedValue(newVal) {
       let arr = newVal.split(",");
-      console.log('arr=>'+ arr[1] )
+      console.log('arr=>' + arr[1])
       // this.id_list[arr[1]] = this.type
       this.$set(this.id_list, arr[1], this.type)
       // this.id_list.push(newVal)
       // const mySet = new Set(this.id_list);
       // const uniqueArray = Array.from(mySet);
       // this.id_list = uniqueArray
-      console.log('sharedValue=>'+ newVal )
-      console.log('type=>'+ this.type )
+      console.log('sharedValue=>' + newVal)
+      console.log('type=>' + this.type)
       console.log(this.id_list)
     },
-    id (newVal) {
+    id(newVal) {
 
-      
-      console.log('new'+ newVal )
+
+      console.log('new' + newVal)
       this.selectedTraceId = newVal;
       this.fetchList(newVal)
     }
   },
   methods: {
+
+    getItem(traceId) {
+      return this.selectedTraceId === traceId ? 'selected' : ''; 
+    },
+
     getClass(traceId) {
-    return this.id_list[traceId] === 'Abnormal' ? 'text-red' :
-           this.id_list[traceId] === 'Normal' ? 'text-green' : '';
-  },
+      return this.id_list[traceId] === 'Abnormal' ? 'text-red' :
+        this.id_list[traceId] === 'Normal' ? 'text-green' : '';
+    },
     SetValue() {
       console.log(1);
     },
@@ -107,7 +115,6 @@ export default {
       this.selectedTraceId = id
       console.log('select id', this.selectedTraceId)
       this.$emit('trace-selected', id)
-      console.log(this.id_list)
     },
     chooseFile() {
       this.$refs.fileInput.click()
@@ -144,12 +151,14 @@ export default {
 </script>
 
 <style>
-.text-red{
+.text-red {
   color: red;
 }
-.text-green{
+
+.text-green {
   color: green;
 }
+
 .left-container {
   height: 80hv;
   color: rgba(255, 255, 255, 1);
@@ -177,7 +186,6 @@ export default {
 }
 
 .menu-item {
-
   width: 100%;
   white-space: nowrap;
   /* 不换行 */
@@ -225,6 +233,9 @@ export default {
 .el-button:hover {
   background-color: gray;
   border-color: gray
-    /* 悬停时将按钮的背景色修改为灰色 */
+}
+
+.selected {
+  background-color: rgb(233, 246, 255);
 }
 </style>
